@@ -1,6 +1,19 @@
-SELECT stars.starid AS starid, 
-COUNT(planets.planetid) + COUNT(moons.planetid) AS orbitals 
-FROM planets, stars, moons 
-WHERE stars.starid=planets.starid 
-AND planets.planetid=moons.planetid 
-GROUP BY stars.starid;
+INSERT INTO hilight
+SELECT pc.starid FROM
+
+(SELECT s.starid, COUNT(p.planetid) AS p_count
+FROM stars AS s JOIN planets AS p
+ON s.starid=p.starid
+GROUP BY s.starid) AS pc
+
+JOIN
+
+(SELECT p.starid, COUNT(m.moonid) AS m_count
+FROM planets AS p JOIN moons AS m
+ON p.planetid=m.planetid
+GROUP BY p.starid) AS mc
+
+ON pc.starid=mc.starid
+
+ORDER BY p_count+m_count DESC
+LIMIT 1
